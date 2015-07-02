@@ -1,3 +1,5 @@
+//This Tip does hide the Triangle mark on the left side of Dropdownlist to be like just a Textbox. Then anywhere inside textbox is clicked, it opens the list. If it's onBlur, it'll hide again.
+
 require(["dojo/store/Memory",
 	"dijit/form/FilteringSelect",
 	"dojo/domReady!"], 
@@ -29,3 +31,6 @@ function(Memory, FilteringSelect, TextBox, dom){
 	);
 	DropdownList.domNode.childNodes[0].style.display = "none"
 });
+
+
+
