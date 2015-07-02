@@ -1,0 +1,31 @@
+require(["dojo/store/Memory",
+	"dijit/form/FilteringSelect",
+	"dojo/domReady!"], 
+function(Memory, FilteringSelect, TextBox, dom){
+	var mDropdownList = new Memory({
+		data: [
+			{id: "0", name:"A"},
+			{id: "1", name:"B"},
+			{id: "2", name:"C"},
+			{id: "3", name:"D"},
+			{id: "4", name:"E"}
+		]
+	});
+	var DropdownList= new FilteringSelect(
+	{
+		id: "DropdownList",
+		"class": "classDrop",
+		store: mDropdownList,
+		searchAttr: "name",
+		onClick: function(){
+			DropdownList.domNode.childNodes[0].style.display = "block";
+			DropdownList.loadDropDown();
+		},
+		onBlur: function(){
+			DropdownList.domNode.childNodes[0].style.display = "none";
+		}		
+	}, 
+	"DropdownList"
+	);
+	DropdownList.domNode.childNodes[0].style.display = "none"
+});
