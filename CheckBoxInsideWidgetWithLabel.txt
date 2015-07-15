@@ -1,0 +1,56 @@
+// This Tip does adding label beside of the check box in Dialog widget by using ContentPane and Dojo.doc.createTextNode
+
+
+**************************************************************************************************
+**// HTML*****************************************************************************************
+**************************************************************************************************
+
+<a onclick="Dialog.show();" Style="cursor:pointer">show</a>
+
+**************************************************************************************************
+**// Javascript***********************************************************************************
+**************************************************************************************************
+require(["dijit/layout/ContentPane",
+	"dijit/Dialog",
+	"dijit/form/CheckBox",
+	"dojo/domReady!"], 
+	function(ContentPane, Dialog, CheckBox, dom){
+
+		var newTextTop = dojo.doc.createTextNode("CheckBox Screen");
+		var chkN = new CheckBox({
+			id: "chkN",
+			value: "NNN",
+			checked: false,
+			onChange: function(b){ 
+				alert('onChange called with parameter = ' + b + ', and widget value = ' + this.get('value') ); 
+			}
+		}, "chkN");
+		chkN.startup();
+		var newTextN = dojo.doc.createTextNode(" Check Box NNN!");
+		var chkW = new CheckBox({
+			id: "chkW",
+			value: "WWW",
+			checked: false,
+			onChange: function(b){ 
+				alert('onChange called with parameter = ' + b + ', and widget value = ' + this.get('value') ); 
+			}
+		}, "chkW");
+		chkW.startup();
+		var newTextW = dojo.doc.createTextNode(" Check Box WWW!");
+	
+		var paneChk = new ContentPane({content:''}, "paneChk");
+		paneChk.domNode.appendChild(newTextTop);
+		paneChk.domNode.appendChild(document.createElement('br'));
+		paneChk.addChild(chkN);
+		paneChk.domNode.appendChild(newTextN);
+		paneChk.domNode.appendChild(document.createElement('br'));
+		paneChk.addChild(chkW);
+		paneChk.domNode.appendChild(newTextW);
+		paneChk.domNode.appendChild(document.createElement('br'));
+		paneChk.startup();
+
+		Dialog = new Dialog({title: "Check Box in Dialog"});
+		Dialog.addChild(paneChk);
+		Dialog.startup();
+	
+});
