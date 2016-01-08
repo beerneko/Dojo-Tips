@@ -2,11 +2,11 @@
 // This function is really useful for finding out if the Grid has been edited or not because it is not necessary to define key names each time when value needs to be gotten for comparing. If it was changed, it returns “True”.
 
 function fnc2D_ChkAry(Acmp1, Acmp2) {
-　if (Acmp1.length == Acmp2.length){ //ここで増減のチェック
+　if (Acmp1.length == Acmp2.length){ // Check for adding/deleting rows. 
 　　for(var a=0;a<Acmp1.length;a++){
 　　　for (var k=0;k<Object.keys(Acmp1[a]).length;k++){
 　　　　if ("Acmp1[a]."+Object.keys(Acmp1[a])[k] 
-　　　　　!= "Acmp2[a]."+Object.keys(Acmp1[a])[k]){//ここで同じキーに対して相違のチェック
+　　　　　!= "Acmp2[a]."+Object.keys(Acmp1[a])[k]){ // Check for changed value for each key.
 　　　　　　return true;
 　　　　}
 　　　}
