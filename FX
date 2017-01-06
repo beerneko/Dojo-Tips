@@ -1,0 +1,149 @@
+はい、こんにちは。久しぶりにノート書きます。
+
+DOJOをつかってリストにあるもののみ、指定の位置にCSSだけで光り続けるアニメーションを載せます。
+
+1. 準備
+- [元となるPNGファイル]
+img/maps/元となる絵.png
+
+- [あなたのarray]アニメーションで表示するPLACE(json file)
+[{PLACE:"a1", NAME:"TOMATO"},
+{PLACE:"b1", NAME:"CUCAMBER"},
+{PLACE:"c1", NAME:"LEMON"}]
+
+- [あなたのJSONリスト]アニメーションで表示するための座標リスト。(json file)
+[{place:0,left:442,top:211},
+{place:a1,left:442,top:211},
+{place:2,left:550,top:297},
+{place:b3,left:543,top:244},
+{place:c4,left:85,top:67}]
+
+こんな具合で実際のサイズでPNGファイルをクリックして取ればいいのではないでしょうか。
+そうすれば、サイズさえ同じであれば思ったところに光るアニメーションを置けます。
+
+(test.php)あなたのJSONリストを先につくっておりましょう。
+<html><head>
+<?php
+if (isset($_GET['left']) && isset($_GET['top']) && isset($_GET['place'])){
+	$myfile = fopen("あなたのJSONリスト.json", "a") or die("Unable to open file!");
+	$txt = "{place:".$_GET['place'].",left:".$_GET['left'].",top:".$_GET['top']."},\n";
+	fwrite($myfile, $txt);
+	fclose($myfile);
+}
+?>
+<script>
+function getLocation(){
+	document.getElementById("left").value = this.event.offsetX;
+	document.getElementById("top").value = this.event.offsetY;
+}
+</script>
+</head>
+<body>
+<img src="img/maps/元となる絵.png" width="668" onClick="getLocation();">
+<form action="test.php" method="get">
+  Place: <input type="text" name="place" id="place"><br>
+  Left: <input type="text" name="left" id="left"><br>
+  Top: <input type="text" name="top" id="top"><br>
+  <input type="submit">	
+</form>
+</body></html>
+これで、準備OK。
+
+
+2.実装
+(main.php)こちらメインです。
+<html>
+<head>
+<!--<?php //include_once("わたしはここにdojo関係のディレクトリをまとめています.php"); ?>//必要なDOJOのモジュールを読んでください。
+ルートはディレクトリーによって違います。いろいろググッてDOJOの設置の仕方を確認してください。 -->
+<script>
+  var あなたのarray = [];
+  あなたのarray.push({PLACE:"a1", NAME:"TOMATO"});
+  あなたのarray.push({PLACE:"b1", NAME:"CUCAMBER"});
+  あなたのarray.push({PLACE:"c1", NAME:"LEMON"});
+  funcMap(あなたのarray);
+
+  function funcMap(あなたのarray){
+		require([
+			"dojo/request",
+			"dojo/dom",
+			"dojo/_base/fx", 
+			"dojo/fx"
+			], function(request, dom, fx, coreFx){
+				var delay = 200;
+				dojo.xhrGet({
+					url: "あなたのJSONリスト.json",
+					handleAs: "json",
+					load: function(あなたのJSONリスト) {
+						for (var i=0;i<あなたのarray.length;i++){
+							var vLeft = あなたのJSONリスト[あなたのJSONリスト.map(function(e) { return e.place; }).indexOf(あなたのarray[i].PLACE)].left;
+							var vTop = あなたのJSONリスト[あなたのJSONリスト.map(function(e) { return e.place; }).indexOf(あなたのarray[i].PLACE)].top;
+							var vPlace = あなたのJSONリスト[あなたのJSONリスト.map(function(e) { return e.place; }).indexOf(あなたのarray[i].PLACE)].place;
+							var nodeCnvs = document.createElement("canvas");
+							var attStyle = document.createAttribute("style");
+							attStyle.value = ""
+								+"background-color:#ccb;"
+								+"position: absolute;"  
+								+"left:"+vLeft+"px;"
+								+"top:"+vTop+"px;"
+								+"";
+							nodeCnvs.setAttributeNode(attStyle);
+							var attId = document.createAttribute("id");
+							attId.value = "mapId"+vPlace;
+							nodeCnvs.setAttributeNode(attId);
+							dom.byId("wrapper").appendChild(nodeCnvs);
+              
+							//ここからループでアニメーションを書き出していきます。
+              eval("var vOmapId"+vPlace+" = new fx.fadeOut({"
+								+"node:'mapId"+vPlace+"', "
+								+"delay: parseInt(delay), "
+								+"duration:1100,"
+								+"onEnd: function(){"
+									+"var vImapId"+vPlace+" = new fx.fadeIn({ "
+										+"node:'mapId"+vPlace+"', "
+										+"delay: parseInt(delay), "
+										+"duration:1100,"
+										+"onEnd: function(){"
+											+"vOmapId"+vPlace+".play();"
+										+"}"
+									+"}).play();"
+								+"}"
+							+"}).play();");
+						}
+					},
+					error: function(err) {
+						/* this will execute if the response couldn't be converted to a JS object,
+						   or if the request was unsuccessful altogether. */
+					}
+				});
+			}
+		);
+	}
+</script>
+
+//CANVASではなくてもSVG、ボタンなどのノードでもOKですね。
+<style type="text/css">
+	div#wrapper {  
+		width: 668px;  
+		height: 318px;  
+		margin: 0 auto;  
+	}  
+	canvas{
+		width: 7px;  
+		height: 7px;  
+		border: 1px solid #F00;  
+		color: #F00;  
+		text-align: center;  
+	}
+	.relative{  
+		position: relative;  
+	}
+</style>
+</head>	
+<body>
+	<div id="wrapper" class="relative">
+		<img src="img/maps/あなたのマップ.png" width="668">
+	</div>
+</body>
+</html>
+これでおしまい。もし、データなどのリフレッシュが必要な場合はノードをきれいにしてからかウェイジットを書きお直しましょう。
